@@ -149,7 +149,7 @@ class ProcessScheduledNotifications extends Command
 }
 ```
 
-And register the command to `route/console.php` and add the code below.
+And register the command to `route/console.php` by adding the code below.
 
 ```php
 Schedule::command('app:process-scheduled-notifications')->monthlyOn(1, '00:00');
