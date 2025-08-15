@@ -35,6 +35,25 @@ return [
 php artisan migrate
 ```
 
+## User setup
+
+Use the `Calendar\Models\Traits\InteractsWithCalendar` trait into your user model.
+
+```php
+<?php
+
+namespace App\Models;
+
+use Calendar\Models\Traits\InteractsWithCalendar;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+
+class User extends Authenticatable
+{
+    use InteractsWithCalendar;
+    //
+}
+```
+
 ## Sample Usage
 
 ```php
@@ -59,7 +78,21 @@ $event = CalendarEventBuilder::for($user)
 
 This will create a daily recurring event until the set end date. For infinite events you can just remove `->endAt($endAt)`. if your config for `allow_reminder` is set to true, it will automatically generate a notification schedules at `calendar_event_scheduled_notifications`. It's up to you on how you manage the notification schedule.
 
+## Retrieving calendar events
+
+```php
+    $user = User::find(1);
+    $start = '2025-07-17';
+    $end = '2025-07-27';
+
+    $events = $user->calendarEvents(['start_date' => $start, 'end_date' => $end]);
+
+    return $events;
+```
+
 ## The CalendarEventBuilder
+
+- `for($user)` Required: the method to set which user will the calendar event be created.
 
 - `->startAt($startDate)` Required: the method to set the start date of the event.
 
@@ -87,7 +120,7 @@ This will create a daily recurring event until the set end date. For infinite ev
 
 - `yearly($byMonth = [], $byMonthDay = [], $byDay = [], int $interval = 1)` Yearly frequency: This method is to set the event frequency to yearly with optional parameters `$byMonth`, `$byMonthDay`, `$byDay` and `$interval`.
 
-- `->create()` The method to execute event creation. By default it will create a calendar named `default` if no parameter is set, if you wan't to add the event in other calendar you can just simply pass the calendar name `->create($calendarName)`
+- `->create()` The method to execute event creation. By default it will create a calendar named `default` if no parameter is set, if you wan't to add the event in another calendar, you can just simply pass the calendar name `->create($calendarName)`
 
 ### Frequency parameters values
 
