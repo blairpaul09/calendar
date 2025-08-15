@@ -5,6 +5,7 @@ A simple Laravel package providing calendar and recurring event features using [
 ## Requirements
 
 - PHP >= 8.3
+- Laravel >= 11
 - [`rlanvin/php-rrule`](https://github.com/rlanvin/php-rrule)
 
 ## Installation
