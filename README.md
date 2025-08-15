@@ -93,7 +93,7 @@ This will create a daily recurring event until the set end date. For infinite ev
 
 ## The CalendarEventBuilder
 
-- `for($user)` Required: the method to set which user will the calendar event be created.
+- `for($user)` Required: the method to set which user will the calendar event to be created.
 
 - `->startAt($startDate)` Required: the method to set the start date of the event.
 
