@@ -57,7 +57,7 @@ $event = CalendarEventBuilder::for($user)
     ->create();
 ```
 
-This will create a daily recurring event until the set end date. For infinite events you can just remove `->endAt($endAt)`. if your config for `allow_reminder` is set to true, it will autmatically generate a notification schedules at `calendar_event_scheduled_notifications`. It's up to you on how you manage the notification schedule. But it is recommended to create a scheduler to process notifications and run it every minute.
+This will create a daily recurring event until the set end date. For infinite events you can just remove `->endAt($endAt)`. if your config for `allow_reminder` is set to true, it will automatically generate a notification schedules at `calendar_event_scheduled_notifications`. It's up to you on how you manage the notification schedule.
 
 ## The CalendarEventBuilder
 
@@ -89,4 +89,14 @@ This will create a daily recurring event until the set end date. For infinite ev
 
 - `->create()` The method to execute event creation. By default it will create a calendar named `default` if no parameter is set, if you wan't to add the event in other calendar you can just simply pass the calendar name `->create($calendarName)`
 
+### Frequency parameters values
 
+```php
+$interval = 1; # any integer.
+$byDay = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU']
+$byMonthDay = [1, 2, 3...., 31] #Negative numbers: -1 to -31 → counting backward from the end of the month
+// -1 = last day of the month
+// -2 = second-to-last day of the month
+// -7 = seventh-to-last day of the month
+$byMonth = [1, 2, 3...., 12] # months by number
+```

@@ -1,5 +1,5 @@
 {
-    "name": "blair/calendar",
+    "name": "blairpaul09/calendar",
     "type": "laravel-library",
     "require": {
         "rlanvin/php-rrule": "^2.6"
