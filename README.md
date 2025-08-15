@@ -36,7 +36,7 @@ return [
 php artisan migrate
 ```
 
-## User setup
+## Model setup
 
 Use the `Calendar\Models\Traits\InteractsWithCalendar` trait into your user model.
 
@@ -214,7 +214,7 @@ $byMonth = [1, 2, 3...., 12] # months by number
 
 ## Generate Calendar Event Reminders
 
-Current this is being dispatch when creating and event `Calendar\Jobs\GenerateCalendarEventReminders`.
+Currently this is being dispatch when creating an event `Calendar\Jobs\GenerateCalendarEventReminders`.
 
 ```php
 use Calendar\Jobs\GenerateCalendarEventReminders;
@@ -228,7 +228,7 @@ if (config('calendar.allow_reminder')) {
 
 ```
 
-For infinite events, you can create a scheduler to dispatch this Job every 1st of a month at 12:00 am to generate new scheduled reminders. But still, this is only optional if you wan't to implement reminders for your users.
+For infinite events, you can create a scheduler to dispatch this Job every 1st of a month at 12:00 am to generate new scheduled reminders. But still, this is only optional if you wan't to implement reminders to your users.
 
 ## Working with Timezone
 
