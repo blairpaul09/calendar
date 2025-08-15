@@ -77,18 +77,94 @@ $event = CalendarEventBuilder::for($user)
     ->create();
 ```
 
-This will create a daily recurring event until the set end date. For infinite events you can just remove `->endAt($endAt)`. if your config for `allow_reminder` is set to true, it will automatically generate a notification schedules, see `calendar_event_scheduled_notifications`. It's up to you on how you manage the notification schedule.
+This will create a daily recurring event until the set end date. For infinite events you can just remove `->endAt($endAt)`. if your config for `allow_reminder` is set to `true`, it will automatically generate a scheduled notifications, see `calendar_event_scheduled_notifications` DB table. It's up to you on how you will handle the scheduled notifications.
+
+## Sample scheduler to process scheduled notifications.
+
+```bash
+php artisan make:command ProcessScheduledNotifications
+```
+
+```php
+<?php
+
+namespace App\Console\Commands;
+
+use Calendar\Models\CalendarEventScheduledNotification;
+use Illuminate\Console\Command;
+
+class ProcessScheduledNotifications extends Command
+{
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'app:process-scheduled-notifications';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Command description';
+
+    /**
+     * Execute the console command.
+     */
+    public function handle()
+    {
+        foreach ($this->getNotifications() as $notification) {
+            try {
+
+                //your notification process here
+
+                //sample, sending email notification to the users
+
+                $notification->delete();
+            } catch (\Exception $e) {
+                $exception = json_encode([
+                    'mnessage' => $e->getMessage(),
+                    'trace' => $e->getTrace()
+                ], JSON_PRETTY_PRINT);
+                $notification->update(['exception' => $exception]);
+            }
+        }
+    }
+
+    /**
+     * Get notifications
+     */
+    private function getNotifications()
+    {
+        $date = now();
+
+        $notifications =  CalendarEventScheduledNotification::where('scheduled_at', '<=', $date->format('Y-m-d H:i:00'))
+            ->orderBy('scheduled_at')
+            ->whereNull('exception')
+            ->get();
+
+        return $notifications;
+    }
+}
+```
+
+And register the command to `route/console.php` and add the code below.
+
+```php
+Schedule::command('app:process-scheduled-notifications')->monthlyOn(1, '00:00');
+```
 
 ## Retrieving calendar events
 
 ```php
-    $user = User::find(1);
-    $start = '2025-07-17';
-    $end = '2025-07-27';
+$user = User::find(1);
+$start = '2025-07-17';
+$end = '2025-07-27';
 
-    $events = $user->calendarEvents(['start_date' => $start, 'end_date' => $end]);
+$events = $user->calendarEvents(['start_date' => $start, 'end_date' => $end]);
 
-    return $events;
+return $events;
 ```
 
 ## The CalendarEventBuilder
@@ -102,16 +178,17 @@ This will create a daily recurring event until the set end date. For infinite ev
 - `->time('13:00', '14:00')` Optional: the method to set the time duration of the event. If not set, the default is `00:00` to `23:59`
 
 - `->reminders($reminders)` Optional: the method to set the scheduled notification reminders.
-  sample reminders
 
-  ```php
-  [
-      ['type' => 'minutes', 'nth' => 10],
-      ['type' => 'hours', 'nth' => 1],
-      ['type' => 'days', 'nth' => 1],
-      ['type' => 'weeks', 'nth' => 1],
-  ]
-  ```
+sample reminders:
+
+```php
+[
+    ['type' => 'minutes', 'nth' => 10],
+    ['type' => 'hours', 'nth' => 1],
+    ['type' => 'days', 'nth' => 1],
+    ['type' => 'weeks', 'nth' => 1],
+]
+```
 
 - `->daily($byDay = [], int $interval = 1)` Daily frequency: This method is to set the event frequency to daily with optional parameters `$byDay` and `$interval`.
 
@@ -135,6 +212,24 @@ $byMonthDay = [1, 2, 3...., 31] #Negative numbers: -1 to -31 → counting backwa
 $byMonth = [1, 2, 3...., 12] # months by number
 ```
 
+## Generate Calendar Event Reminders
+
+Current this is being dispatch when creating and event `Calendar\Jobs\GenerateCalendarEventReminders`.
+
+```php
+use Calendar\Jobs\GenerateCalendarEventReminders;
+
+
+$event = $calendar->events()->create($eventData);
+
+if (config('calendar.allow_reminder')) {
+    dispatch(new GenerateCalendarEventReminders($event));
+}
+
+```
+
+For infinite events, you can create a scheduler to dispatch this Job every 1st of a month at 12:00 am to generate new scheduled reminders. But still, this is only optional if you wan't to implement reminders for your users.
+
 ## Working with Timezone
 
 - By default it will follow the timezone from app config. `config('app.timezone')`
@@ -148,7 +243,7 @@ $byMonth = [1, 2, 3...., 12] # months by number
 - Available helper to get timezone from header. `request()->timezone()` or `$request->timezone()`
 
 ```php
-    Request::macro('timezone', function () {
-        return request()->header('timezone', config('app.timezone'));
-    });
+Request::macro('timezone', function () {
+    return request()->header('timezone', config('app.timezone'));
+});
 ```
