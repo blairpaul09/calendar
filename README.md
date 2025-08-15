@@ -152,7 +152,7 @@ class ProcessScheduledNotifications extends Command
 And register the command to `route/console.php` by adding the code below.
 
 ```php
-Schedule::command('app:process-scheduled-notifications')->monthlyOn(1, '00:00');
+Schedule::command('app:process-scheduled-notifications')->everyMinute();
 ```
 
 ## Retrieving calendar events
