@@ -10,7 +10,7 @@ A simple Laravel package providing calendar and recurring event features using [
 ## Installation
 
 ```bash
-composer require blair/calendar
+composer require blairpaul09/calendar
 ```
 
 ## Publish configuration
@@ -136,7 +136,7 @@ $byMonth = [1, 2, 3...., 12] # months by number
 
 ## Working with Timezone
 
-- By default it will follow the timezone that is set to app config. `config('app.timezone')`
+- By default it will follow the timezone from app config. `config('app.timezone')`
 
 - If you are dealing with multiple timezone, make sure to add `timezone` in your request headers. Sample `timezone: Asia/Manila`.
 
@@ -144,7 +144,7 @@ $byMonth = [1, 2, 3...., 12] # months by number
 
 - If the timezone is not set to request header, the default will be the `config('app.timezone')`;
 
-- available helper to get timezone from header. `request()->timezone()` or `$request->timezone()`
+- Available helper to get timezone from header. `request()->timezone()` or `$request->timezone()`
 
 ```php
     Request::macro('timezone', function () {
