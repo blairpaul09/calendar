@@ -76,7 +76,7 @@ $event = CalendarEventBuilder::for($user)
     ->create();
 ```
 
-This will create a daily recurring event until the set end date. For infinite events you can just remove `->endAt($endAt)`. if your config for `allow_reminder` is set to true, it will automatically generate a notification schedules at `calendar_event_scheduled_notifications`. It's up to you on how you manage the notification schedule.
+This will create a daily recurring event until the set end date. For infinite events you can just remove `->endAt($endAt)`. if your config for `allow_reminder` is set to true, it will automatically generate a notification schedules, see `calendar_event_scheduled_notifications`. It's up to you on how you manage the notification schedule.
 
 ## Retrieving calendar events
 
@@ -132,4 +132,22 @@ $byMonthDay = [1, 2, 3...., 31] #Negative numbers: -1 to -31 → counting backwa
 // -2 = second-to-last day of the month
 // -7 = seventh-to-last day of the month
 $byMonth = [1, 2, 3...., 12] # months by number
+```
+
+## Working with Timezone
+
+- By default it will follow the timezone that is set to app config. `config('app.timezone')`
+
+- If you are dealing with multiple timezone, make sure to add `timezone` in your request headers. Sample `timezone: Asia/Manila`.
+
+- When retrieving calendar events, dates are automatically converted to the timezone from the request headers.
+
+- If the timezone is not set to request header, the default will be the `config('app.timezone')`;
+
+- available helper to get timezone from header. `request()->timezone()` or `$request->timezone()`
+
+```php
+    Request::macro('timezone', function () {
+        return request()->header('timezone', config('app.timezone'));
+    });
 ```

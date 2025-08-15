@@ -29,7 +29,7 @@ class CalendarServiceProvider extends ServiceProvider
         ]);
 
         Request::macro('timezone', function () {
-            return request()->header('timezone', 'Asia/Manila');
+            return request()->header('timezone', config('app.timezone'));
         });
     }
 }
